@@ -1,19 +1,17 @@
 pipeline {
-  agent {
-    docker { image 'liquibase/liquibase:4.4.2' }
-  }
+  agent any
   environment {
     MARIADB_CREDS=credentials('mariadb-credentials')
   }
   stages {
     stage('Status') {
       steps {
-        sh 'liquibase status --url="jdbc:mysql://192.168.32.11:3306/my_app" --changeLogFile=my_app-wrapper.xml --username=$MARIADB_CREDS_USR --password=$MARIADB_CREDS_PSW'
+        sh 'docker run --rm --net=host -v $WORKSPACE:/liquibase/changelog liquibase/liquibase:4.4.2 --defaultsFile=liquibase.docker.properties status --url="jdbc:mysql://localhost:3306/my_user" --changeLogFile=my_app-wrapper.xml --username=$MARIADB_CREDS_USR --password=$MARIADB_CREDS_PSW'
       }
     }
     stage('Update') {
       steps {
-        sh 'liquibase update --url="jdbc:mysql://192.168.32.11:3306/my_app" --changeLogFile=my_app-wrapper.xml --username=$MARIADB_CREDS_USR --password=$MARIADB_CREDS_PSW'
+        sh 'docker run --rm --net=host -v $WORKSPACE:/liquibase/changelog liquibase/liquibase:4.4.2 --defaultsFile=liquibase.docker.properties update --url="jdbc:mysql://localhost:3306/my_user" --changeLogFile=my_app-wrapper.xml --username=$MARIADB_CREDS_USR --password=$MARIADB_CREDS_PSW'
       }
     }
   }
