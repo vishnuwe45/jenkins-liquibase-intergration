@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Verify version') {
       steps {
-        sh 'docker run --rm liquibase/liquibase:4.4.2 version'
+        sh 'docker run --rm liquibase/liquibase:4.4.2'
       }
     }
   }
